@@ -224,6 +224,7 @@ export default {
     padding-top: 60px;
     box-sizing: border-box;
     .content{
+        
         /* margin-top: 40px; */
     }
  }
