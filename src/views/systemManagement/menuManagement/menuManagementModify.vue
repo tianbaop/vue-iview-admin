@@ -127,7 +127,7 @@ export default {
                 icon: '',//图标
                 routeAddress: '',//地址
                 sort: '',//排序
-                remarks: ''//备注
+                remarks: '1111'//备注
             },
             ruleValidate: {
                 modularCoding: [
