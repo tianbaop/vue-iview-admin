@@ -13,7 +13,7 @@ module.exports = {
         host: '0.0.0.0', //对应的主机名
         port: 9018, //端口号
         https: false, //是否开启协议名,如果开启会发出警告
-        hotOnly: true //热模块更新的一种东西,webpack中自动有过配置,但如果我们下载一些新            的模块可以更好的给我更新一些配置
+        hotOnly: true //热模块更新的一种东西,webpack中自动有过配置,但如果我们下载一些新的模块可以更好的给我更新一些配置
     },
     // // webpack 配置进行更细粒度的修改  https://cli.vuejs.org/zh/config/#chainwebpack
     chainWebpack: (config) => {

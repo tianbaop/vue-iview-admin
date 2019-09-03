@@ -16,7 +16,7 @@
 </template>
  
 <script>
-import { formatDate } from "@/common/index.js";
+import { formatDate } from "@/common/common.js";
 export default {
     name: 'home',
     data () {

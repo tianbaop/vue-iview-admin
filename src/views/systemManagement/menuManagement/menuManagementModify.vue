@@ -1,6 +1,6 @@
 <template>
    <div class="menuManagementDetail">
-       <div class="fixed_btn">
+       <div class="fixed_btn buttomtop">
             <buttonGroup :buttonGroup="buttonGroup" @btnClick="btnClick"></buttonGroup>
        </div>
         <div class="content">
@@ -33,10 +33,6 @@
                 </FormItem>
                 <FormItem label="备注" prop="remarks">
                     <Input v-model="formValidate.remarks" placeholder="" type="textarea" :autosize="{minRows: 4,maxRows: 8}"></Input>
-                </FormItem>
-                <FormItem>
-                    <Button type="primary" @click="handleSubmit('formValidate')">Submit</Button>
-                    <Button @click="handleReset('formValidate')" style="margin-left: 8px">Reset</Button>
                 </FormItem>
             </Form>
         </div>

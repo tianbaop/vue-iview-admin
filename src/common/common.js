@@ -1,6 +1,6 @@
 /*
    格式化日期
-   参数：date日期，format日期格式例如yyyy-MM-dd
+   参数：date日期，format日期格式例如yyyy-MM-dd HH-mm-ss
 */
 export function formatDate(date, format) {
     try {

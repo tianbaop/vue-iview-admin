@@ -1,38 +1,68 @@
 <template>
-    <div class="menuManagementList clear">
-        <div class="leftTree fl">
-            <Tree :data="menuTree" :render="renderContent"></Tree>
+   <div class="roleManagementList">
+       <Row class="buttomtop">
+            <Col span="16">
+                <buttonGroup :buttonGroup="buttonGroup" @btnClick="btnClick"></buttonGroup>
+            </Col>
+            <Col span="8">
+                <Input placeholder="输入菜单名称" v-model="searchData.content" style="width: auto" @on-enter="btnSearch">
+                    <Icon type="ios-search" slot="suffix" @click="btnSearch" />
+                </Input>
+            </Col>
+        </Row>
+        <Table   ref="selection" @on-selection-change="selectchange" border :columns="columns2" :data="tableData" :loading="loading" size="small" :max-height="tableHeight"></Table>
+        <div style="margin: 10px;overflow: hidden">
+            <div style="float: right;">
+                <Page :total="pages.totalCont" :current="pages.current" :page-size-opts='[10, 20, 30, 40]' :page-size="pages.pageSize" @on-change="changePage" @on-page-size-change="pageSizeChange" show-sizer></Page>
+            </div>
         </div>
-        <div class="rightTable fl" id="rightTable">
-            <Row class="buttomtop">
-                <Col span="16">
-                    <buttonGroup :buttonGroup="buttonGroup" @btnClick="btnClick"></buttonGroup>
-                </Col>
-                <Col span="8">
-                    <Input placeholder="输入菜单名称" v-model="searchData.moduleName" style="width: auto" @on-enter="btnSearch">
-                        <Icon type="ios-search" slot="suffix" @click="btnSearch" />
-                    </Input>
-                </Col>
-            </Row>
-            
-            <Table   ref="selection" @on-selection-change="selectchange" width="550" border :columns="columns2" :data="tableData" :loading="loading" size="small" :max-height="tableHeight"></Table>
-        </div>
-    </div>
+   </div>
 </template>
  
 <script>
 import buttonGroup from "@/components/buttonGroup/buttonGroup.vue";
+import { formatDate } from "@/common/common.js";
 export default {
-    name: 'menuManagementList',
+    name: 'roleManagementList',
     components:{
         buttonGroup
     },
-    data () { 
+    data () {
         return {
-            // tree组件用到的数据
-            menuTree: [],
-            // tree组件用到的数据
+            // 分页数据
+            pages:{
+                totalCont:0,//总页数
+                current:1,//当前页
+                currepageSizent:10//每页条数
+            },
             // table表格用到的数据
+            // 表格下拉数据
+            volumeTypes:[//性别
+                {
+                    id:1,
+                    name:'男'
+                },
+                {
+                    id:2,
+                    name:'女'
+                },
+                {
+                    id:3,
+                    name:'未知'
+                }
+            ],
+            lockeds:[//状态
+                {
+                    id:1,
+                    name:'启用'
+                },
+                {
+                    id:0,
+                    name:'停用'
+                }
+            ],
+            // 表格下拉数据
+            loading:false,
             tableHeight:200,
             columns2: [ 
                 {
@@ -41,29 +71,87 @@ export default {
                     align: 'center'
                 },
                 {
-                    title: '模块编码',
-                    key: 'modularCoding',
+                    title: '用户名',
+                    key: 'username',
                     minWidth: 100,
                     tooltip:true,
                     sortable:true
                 },
                 {
-                    title: '菜单名称',
-                    key: 'moduleName',
+                    title: '账号',
+                    key: 'usercode',
                     minWidth: 100,
                     tooltip:true
                 },
                 {
-                    title: '上级菜单',
-                    key: 'superiorMenuName',
+                    title: '性别',
+                    key: 'sex',
                     minWidth: 100,
-                    tooltip:true
+                    tooltip:true,
+                    render: (h, params) => {
+                        return h('Select', { 
+                            props: {
+                                disabled:true,
+                                value: params.row.sex, // 获取选择的下拉框的值
+                                size: 'small'
+                            },
+                            on: {
+                                'on-change': e => {
+                                    params.row.sex = e // 改变下拉框赋值
+                                }
+                            }
+                        },
+                        this.volumeTypes.map(function(type){//这个数组需要在data中定义,里面是一个个对象,每个对象里面应当包含value属性(因为要用到)
+                            return h('Option', {
+                                props:{
+                                    value: type.id,
+                                    label: type.name
+                                }
+                            }, type);
+                        })
+                        )
+                    }
                 },
                 {
                     title: '状态',
-                    key: 'statusName',
+                    key: 'locked',
                     minWidth: 100,
-                    tooltip:true
+                    tooltip:true,
+                    render: (h, params) => {
+                        return h('Select', { 
+                            props: {
+                                disabled:true,
+                                value: params.row.locked, // 获取选择的下拉框的值
+                                size: 'small'
+                            },
+                            style: {
+                                color: '#fff'
+                            },
+                            on: {
+                                'on-change': e => {
+                                    params.row.locked = e // 改变下拉框赋值
+                                }
+                            }
+                        },
+                        this.lockeds.map(function(type){//这个数组需要在data中定义,里面是一个个对象,每个对象里面应当包含value属性(因为要用到)
+                            return h('Option', {
+                                props:{
+                                    value: type.id,
+                                    label: type.name
+                                }
+                            }, type);
+                        })
+                        )
+                    }
+                },
+                {
+                    title: '最新登陆时间',
+                    key: 'datetime',
+                    minWidth: 100,
+                    tooltip:true,
+                    render: (h, params) => {
+                        return h('div', formatDate(new Date(params.row.datetime),"yyyy-MM-dd HH:mm:ss"));
+                    }
                 },
                 {
                     title: '操作',
@@ -99,8 +187,7 @@ export default {
             // table表格用到的数据
             // 查询条件
             searchData:{
-                moduleName:'',
-                moduleId: 0,
+                content:'',
                 skipCount: 0,   
                 maxResultCount: 10
             },
@@ -148,12 +235,9 @@ export default {
     },
     created(){
         this.menuData()
-        this.treeData()
     },
     mounted(){
-        // 设置表格高度 
-        console.log(document.getElementById("rightTable").offsetHeight)
-        this.tableHeight = document.getElementById("rightTable").offsetHeight-60
+      
     },
     methods:{
         // 按钮事件
@@ -187,7 +271,6 @@ export default {
             }
         },
         btnSearch(val){
-            this.searchData.moduleId=0
             this.menuData()
         },
         // 按钮事件
@@ -199,7 +282,7 @@ export default {
         // 获取table数据
         menuData(){
             this.loading=true
-            this.$axios.posts("/menuManagement/GetAll",this.searchData)
+            this.$axios.posts("/users/list",this.searchData)
                 .then((res)=>{
                     this.tableData=res.result.item
                     this.loading=false
@@ -209,54 +292,6 @@ export default {
                 })
         },
         // 获取table数据
-        // 获取tree数据
-        treeData(){
-            this.$axios.posts("/menuManagement/GetTree")
-                .then((res)=>{
-                    this.menuTree=res.result.item
-                })
-        },
-        // 获取tree数据
-        // 树组件的render函数渲染
-        renderContent (h, { root, node, data }) {
-            return h('span', {
-                style: {
-                    cursor: 'pointer',
-                    display: 'inline-block',
-                    width: '100%'
-                }, 
-                on: {
-                    click: () => { this.clickTree(data) }
-                }
-            }, [
-                h('span', [
-                    h('Icon', {
-                        props: {
-                            type: 'ios-paper-outline'
-                        },
-                        style: {
-                            marginRight: '8px'
-                        } 
-                    }),
-                    h('span', data.moduleName)
-                ]),
-                h('span', {
-                    style: {
-                        display: 'inline-block',
-                        float: 'right',
-                        marginRight: '32px'
-                    }
-                })
-            ]);
-        },
-        // 树组件的render函数渲染
-        // 树组件的点击事件
-        clickTree (data) {
-            this.searchData.moduleId=data.id
-            this.searchData.moduleName=""
-            this.menuData()
-        },
-        // 树组件的点击事件
         // 删除数据
         deleteData(data){
             this.$axios.posts("/menuManagement/delete",{ids:[data.row.id]})
@@ -268,28 +303,26 @@ export default {
         // 查看数据
         edit(data){
             this.$router.push('/menuManagement/menuManagementModify/'+data.row.id)
-        }
+        },
         // 查看数据
+        // 分页
+        changePage () {//页码改变的回调，返回改变后的页码
+
+        },
+        pageSizeChange () {//切换每页条数时的回调，返回切换后的每页条数
+
+        }
+        // 分页
     }
 }
 </script>
  
 <style scoped lang = "less">
- .menuManagementList{
-     text-align: left;
-     height: 100%;
-     .leftTree{
-         border: 1px solid #eee;
-         height: 100%;
-         margin-right: 20px;
-         width: 170px;
-     }
-     .rightTable{
-         width: calc(~'100% - 190px');
-         height: 100%;
-         /deep/  .ivu-table-wrapper{
-             width: 100%!important;
-         }
-     }
- }
+    /deep/ .ivu-select-disabled , /deep/.ivu-select-disabled .ivu-select-selection{
+            background-color: transparent!important;
+            opacity: 1;
+            cursor: context-menu;
+            color: rgb(0, 0, 0);
+            border: none;
+    }
 </style>

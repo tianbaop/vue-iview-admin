@@ -14,25 +14,38 @@ let routes=[
                 name: 'home',
                 component: () => import('@/views/home/Home.vue')
             },
-            {
+            {//菜单管理
                 path: '/menuManagement',
                 name: 'menuManagement',
                 component: () => import('@/views/systemManagement/menuManagement/menuManagement'),
-                redirect: "/menuManagement/menuManagementList/default",
+                redirect: "/menuManagement/menuManagementList/:id",
                 children:[
                     {
-                        path: '/menuManagement/menuManagementList/default',
+                        path: '/menuManagement/menuManagementList/:id',
                         component: resolve => require(['@/views/systemManagement/menuManagement/menuManagementList'], resolve),
                         meta: {}
                     },
                     {
-                        path: '/menuManagement/menuManagementDetail/default',
+                        path: '/menuManagement/menuManagementDetail/:id',
                         component: resolve => require(['@/views/systemManagement/menuManagement/menuManagementDetail'], resolve),
                         meta: {}
                     },
                     {
                         path: '/menuManagement/menuManagementModify/:id',
                         component: resolve => require(['@/views/systemManagement/menuManagement/menuManagementModify'], resolve),
+                        meta: {}
+                    }
+                ]
+            },
+            {//账号管理
+                path: '/roleManagement',
+                name: 'roleManagement',
+                component: () => import('@/views/accountManagement/roleManagement/roleManagement'),
+                redirect: "/roleManagement/roleManagementList/:id",
+                children:[
+                    {
+                        path: '/roleManagement/roleManagementList/:id',
+                        component: resolve => require(['@/views/accountManagement/roleManagement/roleManagementList'], resolve),
                         meta: {}
                     }
                 ]
